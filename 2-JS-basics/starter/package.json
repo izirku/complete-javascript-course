@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "browserslist": [
+    "defaults"
+  ],
   "scripts": {
     "start": "parcel serve index.html",
     "build": "parcel build --no-content-hash --no-source-maps index.html",
@@ -11,7 +14,5 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "parcel": "^1.12.3"
-  }
+  "devDependencies": {}
 }
