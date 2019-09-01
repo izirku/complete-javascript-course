@@ -2,7 +2,10 @@
   "name": "starter",
   "version": "1.0.0",
   "description": "",
-  "main": ".eslintrc.js",
+  "main": "app.js",
+  "browserslist": [
+    "defaults"
+  ],
   "scripts": {
     "start": "parcel serve index.html",
     "build": "parcel build --no-content-hash --no-source-maps index.html",
