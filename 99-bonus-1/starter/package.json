@@ -1,0 +1,17 @@
+{
+  "name": "starter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "browserslist": [
+    "defaults"
+  ],
+  "scripts": {
+    "start": "parcel serve index.html",
+    "build": "parcel build --no-content-hash --no-source-maps index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

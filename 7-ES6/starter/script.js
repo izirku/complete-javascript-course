@@ -69,15 +69,15 @@
 // *****************************************************************************
 // BLOCKS and IIFEs
 
-{
-  const a = 1
-  let b = 2
+// {
+//   const a = 1
+//   let b = 2
 
-  var sumAandB = () => {
-    return a + b
-  }
-}
-console.log(sumAandB())
+//   var sumAandB = () => {
+//     return a + b
+//   }
+// }
+// console.log(sumAandB())
 
 // wll cause error outside of block
 // console.log(a + b);
@@ -261,8 +261,116 @@ const boxes = document.querySelectorAll('.box')
 // *****************************************************************************
 // MAPS
 
-const questions = new Map()
-questions.set(
-  'question',
-  "What's the official name of the latest major JavaScript version?"
-)
+// const questions = new Map()
+// window.questions = questions
+
+// questions.set(
+//   'question',
+//   "What's the official name of the latest major JavaScript version?"
+// )
+
+// questions.set(1, 'ES5')
+// questions.set(2, 'ES5')
+// questions.set(3, 'ES5')
+// questions.set(4, 'ES5')
+// questions.set('correct', 3)
+// questions.set(true, 'correct answer')
+// questions.set(false, 'wrong answer, please try again')
+
+// console.log(questions.get('question'))
+// console.log(questions.size)
+
+// questions.delete(4)
+// console.log(questions.size)
+
+// if (questions.has(4)) {
+//   questions.delete(4)
+// } else {
+//   console.log('key 4 element already deleted')
+// }
+
+// questions.forEach((value, key) => {
+//   console.log(`${key}: ${value}`)
+// })
+
+// for (let key of questions) {
+//   console.log(`a key: ${key}`)
+// }
+
+// for (let [key, value] of questions.entries()) {
+//   console.log(`${key}: ${value}`)
+// }
+
+// questions.clear()
+// console.log(questions.size)
+
+// *****************************************************************************
+// CLASSES
+
+// ES5 "Inheritance"
+
+var Person5 = function(name, yearOfBirth, job) {
+  this.name = name
+  this.yearOfBirth = yearOfBirth
+  this.job = job
+}
+Person5.prototype.calculateAge = function() {
+  return new Date().getFullYear() - this.yearOfBirth
+}
+
+var Athlete5 = function(name, yearOfBirth, job, olympicGames, medals) {
+  Person5.call(this, name, yearOfBirth, job)
+  this.olympicGames = olympicGames
+  this.medals = medals
+}
+
+// inherit the prototype of Person5
+Athlete5.prototype = Object.create(Person5.prototype)
+
+Athlete5.prototype.wonAnotherMedal = function() {
+  this.medals++
+}
+
+var athlete5 = new Athlete5('Anna', 1990, 'pole dancer olympic pro', 3, 10)
+console.log(athlete5)
+console.log(athlete5.calculateAge())
+athlete5.wonAnotherMedal()
+console.log(athlete5)
+
+// ES6 INHERITANCE
+
+class Person6 {
+  constructor(name, yearOfBirth, job) {
+    this.name = name
+    this.yearOfBirth = yearOfBirth
+    this.job = job
+  }
+
+  calculateAge() {
+    return new Date().getFullYear() - this.yearOfBirth
+  }
+
+  static greeting() {
+    console.log('Hey there!')
+  }
+}
+
+Person6.greeting()
+
+class Athlete6 extends Person6 {
+  constructor(name, yearOfBirth, job, olympicGames, medals) {
+    super(name, yearOfBirth, job)
+    this.olympicGames = olympicGames
+    this.medals = medals
+  }
+
+  wonAnotherMedal() {
+    this.medals++
+  }
+}
+
+var athlete6 = new Athlete6('Anna', 1990, 'pole dancer olympic pro', 3, 10)
+console.log(athlete6)
+console.log(athlete6.calculateAge())
+athlete6.wonAnotherMedal()
+console.log(athlete6)
