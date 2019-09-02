@@ -9,18 +9,17 @@
       rel="stylesheet"
     />
     <!-- <link rel="stylesheet" type="text/css" href="assets/css/style.css" /> -->
-    <link
-      rel="shortcut icon"
-      href="../assets/img/favicon.png"
-      type="image/x-icon"
-    />
+    <link rel="shortcut icon" href="<%=require("./img/favicon.png")%>"
+    type="image/x-icon" />
+    <!-- href="../assets/img/favicon.png" -->
     <title>forkify // Search over 1,000,000 recipes</title>
   </head>
 
   <body>
     <div class="container">
       <header class="header">
-        <img src="../assets/img/logo.png" alt="Logo" class="header__logo" />
+        <img src="<%=require("./img/logo.png")%>" alt="Logo"
+        class="header__logo" />
         <form class="search">
           <input
             type="text"
@@ -29,7 +28,7 @@
           />
           <button class="btn search__btn">
             <svg class="search__icon">
-              <use href="../assets/img/icons.svg#icon-magnifying-glass"></use>
+              <use href="<%=require("./img/icons.svg")%>#icon-magnifying-glass"></use>
             </svg>
             <span>Search</span>
           </button>
@@ -37,7 +36,7 @@
         <div class="likes">
           <div class="likes__field">
             <svg class="likes__icon">
-              <use href="../assets/img/icons.svg#icon-heart"></use>
+              <use href="<%=require("./img/icons.svg")%>#icon-heart"></use>
             </svg>
           </div>
           <div class="likes__panel">

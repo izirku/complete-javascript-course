@@ -1,7 +1,6 @@
 import axios from 'axios'
-import { apiKey, apiAppID } from '../../edamamKey'
-
-const baseURL = 'http://cors-anywhere.herokuapp.com/https://api.edamam.com'
+import { BASE_URL } from '../../constants'
+import { API_APP_ID, API_KEY } from '../../edamamKey'
 
 export default class Search {
   constructor(query) {
@@ -11,9 +10,9 @@ export default class Search {
   async getResults() {
     try {
       const result = await axios(
-        `${baseURL}/search?q=${this.query}&from=0&to=50&app_id=${apiAppID}&app_key=${apiKey}`
+        `${BASE_URL}/search?q=${this.query}&from=0&to=50&app_id=${API_APP_ID}&app_key=${API_KEY}`
       )
-      this.result = result.data.hits
+      this.result = result.data.hits.map(item => item.recipe)
       //   console.log(this.recipies)
     } catch (err) {
       console.error('[error]', err)
