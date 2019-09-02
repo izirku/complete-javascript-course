@@ -1,6 +1,6 @@
 import Search from './models/Search'
 import * as searchView from './views/searchView'
-import { elements, renderLoader } from './views/base'
+import { elements, renderLoader, clearLoader } from './views/base'
 
 /* GLOBAL STATE OF THE APP
  * - Search object
@@ -25,11 +25,12 @@ const controlSearch = async () => {
     renderLoader(elements.searchResults)
 
     // 4. Search for recepies
-    // await state.search.getResults(query)
+    await state.search.getResults(query)
 
     // 5. Render results on UI
     // console.log(state.search.result)
-    // searchView.renderResults(state.search.result)
+    clearLoader()
+    searchView.renderResults(state.search.result)
   }
 }
 
@@ -38,6 +39,15 @@ const installEventListeners = () => {
   elements.searchForm.addEventListener('submit', e => {
     e.preventDefault() // prevent page from reloading
     controlSearch()
+  })
+  elements.searchResultsPages.addEventListener('click', e => {
+    // find closest parent with '.btn-inline' class
+    const btn = e.target.closest('.btn-inline')
+    if (btn) {
+      const goToPage = parseInt(btn.dataset.goto, 10)
+      searchView.clearResults()
+      searchView.renderResults(state.search.result, goToPage)
+    }
   })
 }
 const init = function() {
