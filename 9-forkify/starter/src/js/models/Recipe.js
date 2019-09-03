@@ -4,6 +4,55 @@ import { API_APP_ID, API_KEY } from '../../edamamKey'
 
 // "http://www.edamam.com/ontologies/edamam.owl#recipe_65c39de6ee1e5ff6ce8093f0c6261b73"
 
+// function wordSwap(match, p1) {
+//   console.log(match)
+//   switch (p1.toLowerCase()) {
+//     case 'tablespoon':
+//       return 'tbsp'
+//     case 'teaspoon':
+//       return 'tsp'
+//     case 'ounce':
+//       return 'oz'
+//     case 'cup':
+//       return 'cup'
+//     case 'pound':
+//       return 'lb'
+//   }
+// }
+
+const unitMap = new Map([
+  ['tablespoon', 'tbsp'],
+  ['teaspoon', 'tsp'],
+  ['ounce', 'oz'],
+  ['cup', 'cup'],
+  ['pound', 'lb'],
+])
+
+const fractionalMap = new Map([
+  ['¼', '1/4'],
+  ['½', '1/2'],
+  ['¾', '3/4'],
+  ['⅐', '1/7'],
+  ['⅑', '1/9'],
+  ['⅒', '1/9'],
+  ['⅓', '1/3'],
+  ['⅔', '2/3'],
+  ['⅕', '1/5'],
+  ['⅖', '2/5'],
+  ['⅗', '3/5'],
+  ['⅘', '4/5'],
+  ['⅙', '1/6'],
+  ['⅚', '5/6'],
+  ['⅛', '1/8'],
+  ['⅜', '3/8'],
+  ['⅝', '5/8'],
+  ['⅞', '7/8'],
+  ['↉', '0/3'],
+])
+
+const wordSwap = (_match, p1) => unitMap.get(p1.toLowerCase())
+const fractionSwap = match => fractionalMap.get(match)
+
 export default class Recipe {
   constructor(id) {
     this.id = id
@@ -22,6 +71,7 @@ export default class Recipe {
       this.img = result.data[0].image
       this.url = result.data[0].shareAs
       this.ingredients = result.data[0].ingredientLines
+      this.parseIngredients()
       //   this.ingredients = result.data[0].ingredients
       //   this.ingredients = result.data[0].ingredients.map(
       //     ({ text, weight, measure }) => measure === "undefineds"
@@ -39,14 +89,25 @@ export default class Recipe {
   }
 
   parseIngredients() {
+    const rxUnicodeFractions = /[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞↉]/
+
     const newIngredients = this.ingredients.map(el => {
       // uniform units
-      let ingredient
+      let ingredient = el.replace(
+        /(teaspoon|tablespoon|ounce|cup|pound)(s)?/gi,
+        wordSwap
+      )
+      // uniform fractions
+      while (rxUnicodeFractions.test(ingredient)) {
+        ingredient = ingredient.replace(rxUnicodeFractions, fractionSwap)
+      }
 
       // remove parens and all of their contents
       ingredient = ingredient.replace(/ *\([^\)]*\) */g, '')
 
       // parse ingredients into: count, unit, ingredient
+
+      return ingredient
     })
     this.ingredients = newIngredients
   }
