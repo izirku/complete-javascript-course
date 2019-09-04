@@ -1,31 +1,36 @@
 import axios from 'axios'
+import numericQuantity from 'numeric-quantity'
+
 import { BASE_URL, RECEPIE_URL } from '../../constants'
 import { API_APP_ID, API_KEY } from '../../edamamKey'
 
 // "http://www.edamam.com/ontologies/edamam.owl#recipe_65c39de6ee1e5ff6ce8093f0c6261b73"
 
-// function wordSwap(match, p1) {
-//   console.log(match)
-//   switch (p1.toLowerCase()) {
-//     case 'tablespoon':
-//       return 'tbsp'
-//     case 'teaspoon':
-//       return 'tsp'
-//     case 'ounce':
-//       return 'oz'
-//     case 'cup':
-//       return 'cup'
-//     case 'pound':
-//       return 'lb'
-//   }
-// }
+const rxQuantMax = /^\d+\s*-\s*(\d+)$/g
+const rxUnicodeFractions = /[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞↉]/
+const rxQuantUnitDescr = /^(\d+ +\d+(?:\/|-)\d+|\d+(?:\/|-)\d+|\d+)?\s*(?:fluid|fl)?\s*(tablespoon|teaspoon|tsp|tbsp|tbs|tbl|tb|t|ounce|oz|package|pkg|pint|pt|quart|qt|gallon|gal|lb|pound|cup|c|gram|kilogram|kg|liter|l|milliliter|ml|large|medium|small|average|avg|leaf|leaves|clove|measure(?:ment)?)?(?:s)?\b\s*(.*)$/gi
 
 const unitMap = new Map([
   ['tablespoon', 'tbsp'],
+  ['tbs', 'tbsp'],
+  ['tbl', 'tbsp'],
+  ['t', 'tbsp'],
   ['teaspoon', 'tsp'],
   ['ounce', 'oz'],
   ['cup', 'cup'],
+  ['c', 'cup'],
   ['pound', 'lb'],
+  ['package', 'pkg'],
+  ['pint', 'pt'],
+  ['quart', 'qt'],
+  ['gallon', 'gal'],
+  ['gram', 'g'],
+  ['kilogram', 'kg'],
+  ['mililiter', 'ml'],
+  ['average', 'avg'],
+  ['leaves', 'leaf'],
+  ['measurement', 'meas.'],
+  ['measure', 'meas.'],
 ])
 
 const fractionalMap = new Map([
@@ -50,8 +55,49 @@ const fractionalMap = new Map([
   ['↉', '0/3'],
 ])
 
-const wordSwap = (_match, p1) => unitMap.get(p1.toLowerCase())
+// const wordSwap = (_match, p1) => unitMap.get(p1.toLowerCase())
+const unitCleanse = u => {
+  const clean = unitMap.get(u.toLowerCase())
+  return clean ? clean : u.toLowerCase()
+}
+
+// convert quantities such as:
+// 1/4   => 0.25
+// 1 1/2 => 1.5
+// 1-2   => 2 (max)
+const parseQuantity = q => {
+  const n = numericQuantity(q.replace(rxQuantMax, (_m, g1) => g1))
+  return n ? n : 0
+}
+
 const fractionSwap = match => fractionalMap.get(match)
+
+const parseIngredients = rawIngredients => {
+  const ingredients = rawIngredients.map(el => {
+    let ingredient = el
+
+    // uniform fractions
+    while (rxUnicodeFractions.test(ingredient)) {
+      ingredient = ingredient.replace(rxUnicodeFractions, fractionSwap)
+    }
+
+    // remove parens and all of their contents
+    ingredient = ingredient.replace(/ *\([^\)]*\) */g, ' ')
+
+    // separate quantity, units and description:
+    ingredient.replace(rxQuantUnitDescr, (_match, qt, unit, descr) => {
+      ingredient = {
+        count: qt ? parseQuantity(qt) : 1,
+        unit: unit ? unitCleanse(unit) : qt ? 'ct.' : 'to taste',
+        ingredient: descr,
+      }
+    })
+
+    return ingredient
+  })
+
+  return ingredients
+}
 
 export default class Recipe {
   constructor(id) {
@@ -65,113 +111,15 @@ export default class Recipe {
           RECEPIE_URL + this.id
         )}&app_id=${API_APP_ID}&app_key=${API_KEY}`
       )
-      //   this.result = result.data[0]
       this.title = result.data[0].label
       this.author = result.data[0].source
       this.img = result.data[0].image
       this.url = result.data[0].shareAs
-      this.ingredients = result.data[0].ingredientLines
-      this.parseIngredients()
-      //   this.ingredients = result.data[0].ingredients
-      //   this.ingredients = result.data[0].ingredients.map(
-      //     ({ text, weight, measure }) => measure === "undefineds"
-      //   )
       this.time = result.data[0].totalTime
       this.servings = result.data[0].yield
-
-      //   this.parseIngredients()
-
-      //   this.result = result.data.hits.map(item => item.recipe)
-      //   console.log(this)
+      this.ingredients = parseIngredients(result.data[0].ingredientLines)
     } catch (err) {
       console.error('[error]', err)
     }
   }
-
-  parseIngredients() {
-    const rxUnicodeFractions = /[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞↉]/
-
-    const newIngredients = this.ingredients.map(el => {
-      // uniform units
-      let ingredient = el.replace(
-        /(teaspoon|tablespoon|ounce|cup|pound)(s)?/gi,
-        wordSwap
-      )
-      // uniform fractions
-      while (rxUnicodeFractions.test(ingredient)) {
-        ingredient = ingredient.replace(rxUnicodeFractions, fractionSwap)
-      }
-
-      // remove parens and all of their contents
-      ingredient = ingredient.replace(/ *\([^\)]*\) */g, '')
-
-      // parse ingredients into: count, unit, ingredient
-
-      return ingredient
-    })
-    this.ingredients = newIngredients
-  }
-  //   // Parse ingredients
-  //   parseIngredients() {
-  //     const newIngredients = this.ingredients.map(ingredient => {
-  //       let result = {
-  //         food: ingredient.food,
-  //         text: ingredient.text,
-  //         description: '',
-  //       }
-
-  //       // Edit for plurals and language edge cases
-  //       ingredient.measure = this.parseMeasurement(
-  //         ingredient.quantity,
-  //         ingredient.measure
-  //       )
-  //       // It's cooking, not chemistry
-  //       ingredient.weight = ingredient.weight.toFixed(1) // Will eventually look to round this properly and remove the decimal when .0
-
-  //       // Ideally use the quantity plus the unit of measurement, but if ingredient.measure is gram use ingredient.weight instead
-  //       // If there's no unit of measurement but there is a quantity, use ingredient.quantity + ingredient.food
-  //       if (ingredient.quantity && ingredient.measure !== 'gram') {
-  //         // NB: a quantity of '1' with a <unit> type is usually suspect (1 black pepper, 1 milk chocolate etc), add gram weight + food type
-  //         // 'Egg' is an exception
-  //         if (ingredient.measure === '<unit>') {
-  //           result.description =
-  //             ingredient.quantity === 1 && ingredient.food.toLowerCase() !== 'egg'
-  //               ? `${ingredient.food} (${ingredient.weight}g)`
-  //               : `${ingredient.quantity} ${ingredient.food} (${ingredient.weight}g)`
-  //         }
-  //         // Else use quantity + the parsed unit
-  //         else {
-  //           result.description = `${ingredient.quantity} ${ingredient.measure} of ${ingredient.food}`
-  //         }
-  //       }
-  //       // If there's no quantity or weight, use 'to taste'
-  //       else if (!ingredient.quantity && !ingredient.weight) {
-  //         result.description = `to taste`
-  //       }
-  //       // Else just use the gram weight
-  //       else {
-  //         result.description = `${ingredient.food} (${ingredient.weight}g)`
-  //       }
-  //       return result
-  //     })
-
-  //     this.parsedIngredients = newIngredients
-  //   }
-
-  //   parseMeasurement(quantity, measurement) {
-  //     // Ignore <unit> as a measurement
-  //     if (measurement === '<unit>') return measurement
-  //     // If the quantity is not exactly one, make the measurement plural
-  //     else if (quantity !== 1) {
-  //       // Add unusual cases here
-  //       switch (measurement) {
-  //         case 'leaf':
-  //           return 'leaves'
-  //         default:
-  //           return `${measurement}s`
-  //       }
-  //     } else {
-  //       return measurement
-  //     }
-  //   }
 }
