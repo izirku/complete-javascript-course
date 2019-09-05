@@ -5,6 +5,7 @@ import {
   DM_SEARCH_RESULTS,
   DM_LOADER,
   DM_SEARCH_RESULTS_PAGES,
+  DM_RECIPE,
 } from '../../constants'
 
 import icons from '../../../assets/img/icons.svg'
@@ -15,6 +16,7 @@ export const elements = {
   searchResults: document.querySelector(DM_SEARCH_RESULTS),
   searchResultsList: document.querySelector(DM_SEARCH_RESULTS_LIST),
   searchResultsPages: document.querySelector(DM_SEARCH_RESULTS_PAGES),
+  recipe: document.querySelector(DM_RECIPE),
 }
 
 export const renderLoader = parent => {

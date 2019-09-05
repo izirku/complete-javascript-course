@@ -13,6 +13,15 @@ export const clearResults = () => {
   elements.searchResultsPages.innerHTML = ''
 }
 
+export const highlightSelected = id => {
+  document.querySelectorAll('.results__link').forEach(el => {
+    el.classList.remove('results__link--active')
+  })
+  document
+    .querySelector(`a[href="${id}"]`)
+    .classList.add('results__link--active')
+}
+
 // const limitRecipeTitle = (title, limit = 17) =>
 //   title.length <= limit
 //     ? title

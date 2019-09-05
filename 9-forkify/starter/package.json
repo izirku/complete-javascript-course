@@ -37,6 +37,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "axios": "^0.19.0",
+    "fraction.js": "^4.0.12",
     "numeric-quantity": "^0.5.1"
   }
 }
