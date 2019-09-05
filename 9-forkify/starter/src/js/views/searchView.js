@@ -1,5 +1,5 @@
 // import { compose } from 'rambda'
-import { elements } from './base'
+import { elements, limitRecipeTitle } from './base'
 import icons from '../../../assets/img/icons.svg'
 
 export const getInput = () => elements.searchInput.value
@@ -18,34 +18,9 @@ export const highlightSelected = id => {
     el.classList.remove('results__link--active')
   })
   document
-    .querySelector(`a[href="${id}"]`)
+    .querySelector(`.results__link[href="${id}"]`)
     .classList.add('results__link--active')
 }
-
-// const limitRecipeTitle = (title, limit = 17) =>
-//   title.length <= limit
-//     ? title
-//     : `${title.substr(
-//         0,
-//         title.substr(0, limit - title.match(/ /g).length - 1).lastIndexOf(' ')
-//       )}…`
-
-// const limitRecipeTitle = (title, limit = 17) =>
-//   title.length <= limit
-//     ? title
-//     : compose(
-//         len => title.substr(0, len),
-//         len => title.substr(0, len).lastIndexOf(' '),
-//         len => len - title.match(/ /g).length - 1
-//       )(title.length) + '…'
-
-const limitRecipeTitle = (title, limit = 17) =>
-  title.length <= limit
-    ? title
-    : `${title.substr(
-        0,
-        title.substr(0, limit - title.match(/ /g).length - 1).lastIndexOf(' ')
-      )}…`
 
 const renderRecipe = recipe => {
   const getID = uri => uri.split('#')[1]

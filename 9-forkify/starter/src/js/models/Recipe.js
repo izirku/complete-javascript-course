@@ -88,7 +88,7 @@ const parseIngredients = rawIngredients => {
     ingredient.replace(rxQuantUnitDescr, (_match, qt, unit, descr) => {
       ingredient = {
         count: qt ? parseQuantity(qt) : 1,
-        unit: unit ? unitCleanse(unit) : qt ? 'ct.' : 'to taste',
+        unit: unit ? unitCleanse(unit) : qt ? 'ct.' : '',
         ingredient: descr,
       }
     })
