@@ -49,12 +49,12 @@ export const renderRecipe = recipe => {
             <span class="recipe__info-text"> servings</span>
 
             <div class="recipe__info-buttons">
-                <button class="btn-tiny">
+                <button class="btn-tiny btn-decrese">
                     <svg>
                         <use href="${icons}#icon-circle-with-minus"></use>
                     </svg>
                 </button>
-                <button class="btn-tiny">
+                <button class="btn-tiny btn-increase">
                     <svg>
                         <use href="${icons}#icon-circle-with-plus"></use>
                     </svg>
@@ -100,4 +100,16 @@ export const renderRecipe = recipe => {
     </div>
     `
   elements.recipe.insertAdjacentHTML('afterbegin', markup)
+}
+
+export const updateServings = recipe => {
+  // update servings
+  document.querySelector('.recipe__info-data--people').textContent =
+    recipe.servings
+
+  // update ingredients
+  const countElements = document.querySelectorAll('.recipe__count')
+  countElements.forEach((el, i) => {
+    el.textContent = Fraction(recipe.ingredients[i].count).toFraction(true)
+  })
 }
