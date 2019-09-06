@@ -20,7 +20,9 @@ export default class Likes {
 
   deleteLike(id) {
     this.likes.splice(this.likes.findIndex(el => el.id === id), 1)
+
     // persist data in localStorage
+    this.persistData()
   }
 
   isLiked(id) {
@@ -33,6 +35,10 @@ export default class Likes {
 
   persistData() {
     localStorage.setItem('likes', JSON.stringify(this.likes))
-    this.persistData()
+  }
+
+  readStorage() {
+    const storage = JSON.parse(localStorage.getItem('likes'))
+    if (storage) this.likes = storage
   }
 }

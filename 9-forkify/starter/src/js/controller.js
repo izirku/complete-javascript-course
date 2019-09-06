@@ -21,7 +21,7 @@ const state = {}
 const controlSearch = async () => {
   // 1. get query from view
   const query = searchView.getInput()
-  console.log(query)
+  // console.log(query)
 
   if (query) {
     // 2. new search object and add to state
@@ -37,12 +37,12 @@ const controlSearch = async () => {
       await state.search.getResults(query)
 
       // 5. Render results on UI
-      console.log(state.search.result)
+      // console.log(state.search.result)
       clearLoader()
       searchView.renderResults(state.search.result)
     } catch (err) {
       clearLoader()
-      console.error('[error]', err)
+      // console.error('[error]', err)
     }
   }
 }
@@ -58,7 +58,7 @@ const controlSearch = async () => {
 const controlRecipe = async () => {
   const id = window.location.hash
   if (id) {
-    console.log(id)
+    // console.log(id)
     // prepare UI for changes
     recipeView.clearRecipe()
     renderLoader(elements.recipe)
@@ -77,11 +77,12 @@ const controlRecipe = async () => {
 
       // render recipe
       clearLoader()
-      console.log(state.recipe)
+      // console.log(state.recipe)
       recipeView.renderRecipe(state.recipe, state.likes.isLiked(id))
     } catch (err) {
       clearLoader()
-      console.error('[error]', err)
+      // TODO: show in DEV
+      // console.error('[error]', err)
     }
   }
 }
@@ -160,6 +161,21 @@ const installEventListeners = () => {
     }
   })
 
+  window.addEventListener('load', () => {
+    state.likes = new Likes()
+
+    // restore likes
+    state.likes.readStorage()
+
+    // toggle like menu button
+    likesView.toggleLikeMenu(state.likes.getNumLikes())
+
+    // render the existing likes
+    state.likes.likes.forEach(like => {
+      likesView.renderLike(like)
+    })
+  })
+
   // only fires when url after # has changed or on page load
   ;['hashchange', 'load'].forEach(e => {
     window.addEventListener(e, controlRecipe)
@@ -218,12 +234,6 @@ const installEventListeners = () => {
 }
 
 const init = function() {
-  console.log('initializing app...')
-
-  // TEST ONLY
-  state.likes = new Likes()
-  likesView.toggleLikeMenu(state.likes.getNumLikes())
-
   installEventListeners()
 
   //   console.log(search)

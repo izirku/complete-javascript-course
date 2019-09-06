@@ -2,14 +2,15 @@ import Fraction from 'fraction.js'
 import { elements } from './base'
 import icons from '../../../assets/img/icons.svg'
 
+const formatCount = count =>
+  Fraction(Math.round(count * 100) / 100).toFraction(true)
+
 const createIngredient = ingredient => `
 <li class="recipe__item">
     <svg class="recipe__icon">
         <use href="${icons}#icon-check"></use>
     </svg>
-    <div class="recipe__count">${Fraction(ingredient.count).toFraction(
-      true
-    )}</div>
+    <div class="recipe__count">${formatCount(ingredient.count)}</div>
     <div class="recipe__ingredient">
         <span class="recipe__unit">${ingredient.unit}</span>
         ${ingredient.ingredient}
@@ -49,7 +50,7 @@ export const renderRecipe = (recipe, isLiked) => {
             <span class="recipe__info-text"> servings</span>
 
             <div class="recipe__info-buttons">
-                <button class="btn-tiny btn-decrese">
+                <button class="btn-tiny btn-decrease">
                     <svg>
                         <use href="${icons}#icon-circle-with-minus"></use>
                     </svg>
@@ -112,6 +113,6 @@ export const updateServings = recipe => {
   // update ingredients
   const countElements = document.querySelectorAll('.recipe__count')
   countElements.forEach((el, i) => {
-    el.textContent = Fraction(recipe.ingredients[i].count).toFraction(true)
+    el.textContent = formatCount(recipe.ingredients[i].count)
   })
 }
